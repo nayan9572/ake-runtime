@@ -65,6 +65,9 @@ def test_full_navigation_round_trip(client):
             assert os_["breadcrumb"] == [ex_id, child["id"]]
 
     back = client.post("/back", json={"session_id": sid}).json()
+    if rs["results"]:
+        assert back["mode"] == "results"
+        back = client.post("/back", json={"session_id": sid}).json()
     assert back["mode"] in ("menu", "home")
 
     home = client.post("/home", json={"session_id": sid}).json()
