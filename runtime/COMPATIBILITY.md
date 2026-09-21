@@ -9,10 +9,10 @@
 | Non-engineering domains (robotics/customer with ID PKs) | ✅ graph builds, derived vocabulary | verified (robotics) |
 
 ## Not yet supported (see KNOWN_LIMITATIONS.md)
-- Numeric / non-`[A-Z]+-` primary keys (F-05)
+- Genuine composite primary keys (F-06)
 - Composite primary keys (F-06)
 - Relationship sheets with non-standard column names, when a Registry Catalog IS present (F-07)
-- Duplicate primary-key values (F-08)
+- Duplicate primary-key values within the same registry (F-08b)
 - FK stored as free-text prose that matches no entity name (Command residual)
 
 IR schema: see SCHEMA_VERSION.json (v1.1). Canonical metrics: BASELINE.json.

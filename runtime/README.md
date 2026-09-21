@@ -100,8 +100,14 @@ See `BASELINE.json` (canonical metrics), `CHANGELOG.md` (versioned findings), `E
   (data registries) and `ake/*.md` (design/freeze notes).
 - `colab_run.py`, `AKE_MASTER.py` — entry points. `tests/` — regression + verification.
 
+## AKE and EBIS relationship
+
+AKE and EBIS (https://github.com/nayan9572/EBIS) are related but currently separate repositories. AKE currently uses the EBIS architecture workbook as a reference validation dataset. Future integration is an intended direction, but the current runtime does not claim that AKE and EBIS are already one combined system.
+
 ## License
-Open source. Use, fork, and run on your own engineering workbooks.
+Copyright © 2026 Nayan Kumar.
+
+AKE Runtime is licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later). See the repository root LICENSE and NOTICE.md.
 
 
 # AKE Master Launcher — server/dashboard deployment
@@ -126,7 +132,7 @@ for the canonical local AKE runtime/batch/REPL workflow. The two launchers are i
 
 ### Launcher asset ownership
 
-The GitHub runtime tree is the canonical source for local execution:
+The GitHub runtime tree is the canonical source for local execution. When the launcher is run directly from this checked-out runtime/ directory, it uses that tree without requiring AKE_Runtime.zip or ake_server.zip:
 
 ```text
 runtime/

@@ -33,10 +33,10 @@ IF A FRONTEND IS ALREADY INSIDE ake_server.zip
     fallback for when none exists yet.
 
 OUTSIDE COLAB
-    If google.colab isn't importable, this looks for AKE_Runtime.zip / ake_server.zip /
-    *.xlsx already sitting next to this script instead of prompting an upload dialog,
-    mirroring AKE_Colab_Shell.py's own fallback — so `python AKE_Master_Launcher.py` also
-    works for local testing.
+    If google.colab isn't importable and this file is running from a checked-out repository
+    runtime/ directory, the tracked runtime tree is used directly as the canonical source;
+    no AKE_Runtime.zip or ake_server.zip is required. If the launcher is copied elsewhere,
+    it falls back to looking for AKE_Runtime.zip / ake_server.zip / *.xlsx beside the script.
 
 ADMIN SETTINGS
     Edit the constants right below before running the cell if you need something other
@@ -317,6 +317,10 @@ def _in_colab():
 
 
 def _default_working_dir():
+    if not _in_colab():
+        repo_source = _repository_runtime_root()
+        if repo_source:
+            return os.path.join(os.path.dirname(repo_source), "ake_runtime_live")
     base = "/content" if _in_colab() else os.getcwd()
     return os.path.join(base, "ake_runtime_live")
 
@@ -325,11 +329,20 @@ def _default_working_dir():
 # Step 1 — uploads
 # ============================================================================
 
+def _repository_runtime_root():
+    """Return the checked-out runtime directory when this launcher is running from source."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    required = ("AKE_MASTER.py", "ake", "ake_server")
+    return here if all(os.path.exists(os.path.join(here, item)) for item in required) else None
+
+
 def _collect_uploads():
-    """Return {filename: bytes} for AKE_Runtime.zip / ake_server.zip / an optional
-    workbook. In Colab this opens ONE upload dialog — the browser's own file picker
-    supports selecting all three at once. Outside Colab it looks for the same three
-    things already on disk, mirroring AKE_Colab_Shell.py's own _get_uploads() fallback."""
+    """Return upload artifacts when a portable bundle is needed.
+    
+    Colab keeps the original ZIP upload workflow. A normal repository checkout is different:
+    the tracked runtime tree is already the canonical source, so it is used directly and no
+    stale/repacked ZIP artifacts are required.
+    """
     if _in_colab():
         from google.colab import files
         print("Select AKE_Runtime.zip and ake_server.zip together (multi-select works in "
@@ -347,6 +360,14 @@ def _collect_uploads():
                 with open(f, "rb") as fh:
                     found[f] = fh.read()
     return found
+
+
+def _copy_repository_runtime(source_root, dest_root):
+    """Copy the tracked runtime tree into an isolated launch workspace."""
+    ignore = shutil.ignore_patterns(
+        ".git", ".venv", "venv", "__pycache__", "*.pyc", "ake_runtime_live"
+    )
+    shutil.copytree(source_root, dest_root, dirs_exist_ok=True, ignore=ignore)
 
 
 def _classify_uploads(uploads):
@@ -973,19 +994,26 @@ def launch():
         shutil.rmtree(root, ignore_errors=True)
     os.makedirs(root, exist_ok=True)
 
-    uploads = _collect_uploads()
-    if not uploads:
-        sys.exit("No files uploaded/found. Need AKE_Runtime.zip and ake_server.zip.")
-    runtime_zip, server_zip, wb_bytes, wb_name = _classify_uploads(uploads)
-    if not runtime_zip:
-        sys.exit("Couldn't find AKE_Runtime.zip among the uploaded files.")
-    if not server_zip:
-        sys.exit("Couldn't find ake_server.zip among the uploaded files.")
+    repo_source = _repository_runtime_root() if not _in_colab() else None
+    wb_bytes = wb_name = None
 
-    print("Extracting AKE Runtime…")
-    _extract_runtime_zip(runtime_zip, root)
-    print("Extracting ake_server…")
-    _extract_server_zip(server_zip, root)
+    if repo_source:
+        print("Using checked-out runtime tree as the canonical source…")
+        _copy_repository_runtime(repo_source, root)
+    else:
+        uploads = _collect_uploads()
+        if not uploads:
+            sys.exit("No files uploaded/found. Need AKE_Runtime.zip and ake_server.zip.")
+        runtime_zip, server_zip, wb_bytes, wb_name = _classify_uploads(uploads)
+        if not runtime_zip:
+            sys.exit("Couldn't find AKE_Runtime.zip among the uploaded files.")
+        if not server_zip:
+            sys.exit("Couldn't find ake_server.zip among the uploaded files.")
+
+        print("Extracting AKE Runtime…")
+        _extract_runtime_zip(runtime_zip, root)
+        print("Extracting ake_server…")
+        _extract_server_zip(server_zip, root)
 
     explicit_wb = _place_workbook(root, wb_bytes, wb_name)
     if explicit_wb:
