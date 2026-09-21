@@ -29,7 +29,11 @@ def test_state_contract():
     assert r.json() == {
         "mode": "owner",
         "workbook_name": "initial.xlsx",
+        "workbook_path": None,
+        "generation": 0,
+        "generation_reason": "initial",
         "active_sessions": 0,
+        "feed_len": 0,
     }
 
 
@@ -42,7 +46,7 @@ def test_feed_contract_and_sequence():
     r = c.get("/_ake/control/feed?since=0&limit=5", headers=headers())
     assert r.status_code == 200
     body = r.json()
-    assert body["next_seq"] == 2
+    assert body["latest"] == 2
     assert [e["seq"] for e in body["entries"]] == [1, 2]
     assert body["entries"][0]["session_id"] == "s1"
     assert body["entries"][1]["asked"] == "search"
@@ -61,7 +65,11 @@ def test_mode_accepts_launcher_user_alias():
     c, control = client()
     r = c.post("/_ake/control/mode", json={"mode": "user"}, headers=headers())
     assert r.status_code == 200
-    assert r.json() == {"mode": "workspace"}
+    assert r.json() == {
+        "mode": "workspace",
+        "generation": 0,
+        "note": "Live sessions keep the workbook they opened; only new sessions change.",
+    }
     assert control.mode == "workspace"
 
 
@@ -70,7 +78,7 @@ def test_mode_accepts_owner():
     c.post("/_ake/control/mode", json={"mode": "user"}, headers=headers())
     r = c.post("/_ake/control/mode", json={"mode": "owner"}, headers=headers())
     assert r.status_code == 200
-    assert r.json() == {"mode": "owner"}
+    assert r.json()["mode"] == "owner"
 
 
 def test_workbook_contract(tmp_path):
@@ -83,8 +91,10 @@ def test_workbook_contract(tmp_path):
         headers=headers(),
     )
     assert r.status_code == 200
-    assert r.json() == {"workbook_name": "registry.xlsx"}
+    assert r.json()["workbook_name"] == "registry.xlsx"
+    assert r.json()["generation"] == 1
     assert control.workbook_name == "registry.xlsx"
+    assert control.generation == 1
 
 
 def test_workbook_missing_path_rejected():
@@ -123,3 +133,33 @@ def test_runtime_state_binding_uses_session_store():
     store.shared_workbook_name = "changed.xlsx"
     assert control.state()["active_sessions"] == 1
     assert control.state()["workbook_name"] == "changed.xlsx"
+
+def test_standalone_public_state_is_not_exposed_without_runtime_binding():
+    c, _ = client()
+    assert c.get("/_ake/public_state").status_code == 404
+
+
+def test_generation_bumps_on_workbook_change(tmp_path):
+    c, control = client()
+    wb = tmp_path / "registry.xlsx"
+    wb.write_bytes(b"placeholder")
+    c.post("/_ake/control/workbook", json={"path": str(wb)}, headers=headers())
+    assert control.generation == 1
+
+
+def test_runtime_state_binding_exposes_live_settings():
+    class FakeSettings:
+        MODE = "owner"
+
+    class FakeStore:
+        def active_count(self):
+            return 4
+        shared_workbook_name = "runtime.xlsx"
+        _shared_workbook_path = "/tmp/runtime.xlsx"
+
+    control = ControlPlane(token=TOKEN)
+    bind_runtime_state(control, FakeStore(), FakeSettings())
+    assert control.state()["mode"] == "owner"
+    assert control.state()["workbook_name"] == "runtime.xlsx"
+    assert control.state()["workbook_path"] == "/tmp/runtime.xlsx"
+    assert control.state()["active_sessions"] == 4
