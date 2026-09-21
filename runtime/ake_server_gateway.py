@@ -28,6 +28,9 @@ class ControlPlane:
     mode: str = "owner"
     workbook_name: Optional[str] = None
     active_sessions: int = 0
+    active_sessions_provider: Optional[Callable[[], int]] = None
+    mode_provider: Optional[Callable[[], str]] = None
+    workbook_provider: Optional[Callable[[], Optional[str]]] = None
     apply_mode: Optional[Callable[[str], str]] = None
     apply_workbook: Optional[Callable[[str], str]] = None
     _seq: int = 0
@@ -47,10 +50,21 @@ class ControlPlane:
         return value
 
     def state(self) -> dict[str, Any]:
+        mode = self.mode_provider() if self.mode_provider is not None else self.mode
+        workbook_name = (
+            self.workbook_provider()
+            if self.workbook_provider is not None
+            else self.workbook_name
+        )
+        active_sessions = (
+            self.active_sessions_provider()
+            if self.active_sessions_provider is not None
+            else self.active_sessions
+        )
         return {
-            "mode": self.mode,
-            "workbook_name": self.workbook_name,
-            "active_sessions": int(self.active_sessions),
+            "mode": mode,
+            "workbook_name": workbook_name,
+            "active_sessions": int(active_sessions),
         }
 
     def feed(self, since: int = 0, limit: int = 5) -> dict[str, Any]:
@@ -104,6 +118,19 @@ class ModeRequest(BaseModel):
 
 class WorkbookRequest(BaseModel):
     path: str
+
+
+def bind_runtime_state(control: ControlPlane, store: Any) -> ControlPlane:
+    """Bind read-only control state to the real AKE SessionStore.
+
+    This keeps launcher controls outside ake_server.api. The launcher can import the
+    existing API app and store, bind them here, then attach the control routes.
+    Mode/workbook mutations remain explicit callbacks because changing deployment mode
+    is a process/orchestration concern, not a SessionStore mutation.
+    """
+    control.active_sessions_provider = store.active_count
+    control.workbook_provider = lambda: store.shared_workbook_name
+    return control
 
 
 def create_gateway_app(control: ControlPlane, api_app: Optional[FastAPI] = None) -> FastAPI:
