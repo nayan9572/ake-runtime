@@ -102,3 +102,69 @@ See `BASELINE.json` (canonical metrics), `CHANGELOG.md` (versioned findings), `E
 
 ## License
 Open source. Use, fork, and run on your own engineering workbooks.
+
+
+# AKE Master Launcher — server/dashboard deployment
+
+AKE_Master_Launcher.py is a separate deployment entry point from AKE_MASTER.py.
+
+Use:
+
+```bash
+python AKE_Master_Launcher.py
+```
+
+when you want the complete server/dashboard workflow. It assembles the runtime, starts the HTTP adapter through the generated gateway, optionally starts a Cloudflare quick tunnel, and keeps the launcher control console in the same process.
+
+Use:
+
+```bash
+python AKE_MASTER.py
+```
+
+for the canonical local AKE runtime/batch/REPL workflow. The two launchers are intentionally distinct.
+
+### Launcher asset ownership
+
+The GitHub runtime tree is the canonical source for local execution:
+
+```text
+runtime/
+├── AKE_Master_Launcher.py
+├── AKE_MASTER.py
+├── ake/
+├── ake_server/
+├── ake_server_gateway.py
+└── EBIS_Architecture_Registry_Workbook_v17.xlsx
+```
+
+The launcher artifact also supports the Colab upload workflow (AKE_Runtime.zip + ake_server.zip). When running from a repository checkout, do not treat an old ZIP as the source of the runtime: the tracked runtime/ tree is the source.
+
+If no workbook is supplied, owner mode can use the bundled EBIS_Architecture_Registry_Workbook_v17.xlsx.
+
+### Server modes
+
+At launch the launcher can select:
+
+- Owner — visitors share the workbook selected by the owner.
+- User / Workspace — each visitor works with a private uploaded workbook/session.
+
+The launcher control console can change mode or the workbook used for new sessions.
+
+### External tunnel
+
+Cloudflare quick-tunnel support is optional. The launcher verifies local server readiness before attempting the tunnel and does not expose the public URL through the dashboard API.
+
+The current download fallback is the Linux x86_64 cloudflared-linux-amd64 binary. Native ARM64/Termux execution of that fallback is not guaranteed; install a compatible cloudflared binary separately when required.
+
+### Launcher integration tests
+
+From runtime/:
+
+```bash
+pytest -q tests/test_launcher_integration.py
+```
+
+The suite builds temporary Colab-style ZIP artifacts from the checked-out runtime, runs the launcher against an isolated temporary workspace, verifies generated gateway/dashboard assets, exercises health/public state/control-token protection/mode switching/workbook switching, performs a real workbook upload and query, verifies observer feed recording, and cleans up the spawned server.
+
+The tests do not write into the repository checkout and do not require a public Cloudflare tunnel.
