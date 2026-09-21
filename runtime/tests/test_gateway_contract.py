@@ -15,8 +15,9 @@ TOKEN = "phase1c-test-token"
 
 def gateway():
     os.environ["AKE_CONTROL_TOKEN"] = TOKEN
-    sys.modules.pop("ake_server_gateway", None)
-    return importlib.import_module("ake_server_gateway")
+    if "ake_server_gateway" not in sys.modules:
+        return importlib.import_module("ake_server_gateway")
+    return sys.modules["ake_server_gateway"]
 
 
 def client():
