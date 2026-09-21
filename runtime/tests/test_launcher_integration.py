@@ -230,3 +230,34 @@ def test_launcher_real_upload_query_and_observer_feed(running_launcher):
     paths = [entry.get("path") for entry in feed.get("entries", [])]
     assert "/upload" in paths
     assert "/query" in paths
+
+def test_launcher_uses_checked_out_runtime_tree_without_zip_artifacts(tmp_path, monkeypatch):
+    launcher = _load_launcher()
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(launcher, "WORKING_DIR", str(tmp_path / "live"))
+    monkeypatch.setattr(launcher, "SERVER_MODE", "owner")
+    monkeypatch.setattr(launcher, "_pip_install_quiet", lambda root: None)
+    monkeypatch.setattr(launcher, "_ensure_cloudflared", lambda root: None)
+
+    import socket
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    port = s.getsockname()[1]
+    s.close()
+    monkeypatch.setattr(launcher, "SERVER_PORT", port)
+
+    assert launcher._repository_runtime_root() == str(RUNTIME_DIR)
+    root, workbook = launcher.launch()
+    try:
+        assert workbook is None
+        assert (Path(root) / "AKE_MASTER.py").is_file()
+        assert (Path(root) / "ake" / "__init__.py").is_file()
+        assert (Path(root) / "ake_server" / "api.py").is_file()
+        assert (Path(root) / "EBIS_Architecture_Registry_Workbook_v17.xlsx").is_file()
+        status, health = _json(f"http://127.0.0.1:{port}/health")
+        assert status == 200
+        assert health["workbook_name"] == "EBIS_Architecture_Registry_Workbook_v17.xlsx"
+    finally:
+        launcher._kill_stale(root)
+        time.sleep(0.5)
+
