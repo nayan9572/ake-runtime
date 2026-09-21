@@ -133,6 +133,16 @@ def bind_runtime_state(control: ControlPlane, store: Any) -> ControlPlane:
     return control
 
 
+def attach_runtime_app(
+    control: ControlPlane,
+    api_app: FastAPI,
+    store: Any,
+) -> FastAPI:
+    """Bind real runtime state and attach control routes to the existing API app."""
+    bind_runtime_state(control, store)
+    return create_gateway_app(control, api_app=api_app)
+
+
 def create_gateway_app(control: ControlPlane, api_app: Optional[FastAPI] = None) -> FastAPI:
     """Attach launcher control routes to an existing AKE API app."""
     app = api_app or FastAPI(title="AKE Gateway")
