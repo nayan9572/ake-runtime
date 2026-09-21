@@ -643,3 +643,26 @@ Do not mix repository-root paths with runtime-relative commands.
 # License
 
 See `LICENSE` for the repository license terms.
+
+
+## Two runtime entry points
+
+The repository intentionally keeps two distinct launchers under runtime/:
+
+| Entry point | Purpose |
+|---|---|
+| `python AKE_MASTER.py` | Canonical local AKE runtime, batch, and REPL workflow |
+| `python AKE_Master_Launcher.py` | Server/dashboard deployment workflow with launcher control plane and optional public tunnel |
+
+The Master Launcher assembles the tracked AKE runtime and server adapter, uses the bundled EBIS workbook when no workbook is supplied, generates its gateway/dashboard fallback assets, and can expose the server through a Cloudflare quick tunnel.
+
+The tracked runtime tree is the source of truth for repository-local execution. The Colab ZIP upload path remains supported for the launcher artifact, but an old ZIP must not silently replace the checked-out runtime/ source.
+
+For launcher-specific verification:
+
+```bash
+cd runtime
+pytest -q tests/test_launcher_integration.py
+```
+
+The integration suite uses isolated temporary workspaces and does not require a public tunnel.
