@@ -13,8 +13,11 @@ The launcher supplies x-ake-control-token.
 
 from __future__ import annotations
 
+import json
 import os
+import threading
 import time
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional
 
@@ -27,14 +30,18 @@ class ControlPlane:
     token: str
     mode: str = "owner"
     workbook_name: Optional[str] = None
+    workbook_path: Optional[str] = None
     active_sessions: int = 0
+    generation: int = 0
+    generation_reason: str = "initial"
     active_sessions_provider: Optional[Callable[[], int]] = None
     mode_provider: Optional[Callable[[], str]] = None
     workbook_provider: Optional[Callable[[], Optional[str]]] = None
     apply_mode: Optional[Callable[[str], str]] = None
     apply_workbook: Optional[Callable[[str], str]] = None
     _seq: int = 0
-    _feed: list[dict[str, Any]] = field(default_factory=list)
+    _feed: deque[dict[str, Any]] = field(default_factory=lambda: deque(maxlen=500))
+    _feed_lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def _check_token(self, supplied: Optional[str]) -> None:
         if not supplied or supplied != self.token:
@@ -64,16 +71,21 @@ class ControlPlane:
         return {
             "mode": mode,
             "workbook_name": workbook_name,
+            "workbook_path": self.workbook_path,
+            "generation": self.generation,
+            "generation_reason": self.generation_reason,
             "active_sessions": int(active_sessions),
+            "feed_len": len(self._feed),
         }
 
-    def feed(self, since: int = 0, limit: int = 5) -> dict[str, Any]:
+    def feed(self, since: int = 0, limit: int = 100) -> dict[str, Any]:
         since = max(0, int(since))
         limit = max(1, min(int(limit), 100))
-        return {
-            "entries": [e for e in self._feed if e["seq"] > since][-limit:],
-            "next_seq": self._seq,
-        }
+        with self._feed_lock:
+            return {
+                "entries": [e for e in self._feed if e["seq"] > since][-limit:],
+                "latest": self._seq,
+            }
 
     def record(self, *, session_id=None, asked=None, entity=None, workbook=None,
                at: Optional[float] = None) -> dict[str, Any]:
@@ -86,9 +98,8 @@ class ControlPlane:
             "entity": entity,
             "workbook": workbook,
         }
-        self._feed.append(entry)
-        if len(self._feed) > 1000:
-            del self._feed[:-1000]
+        with self._feed_lock:
+            self._feed.append(entry)
         return entry
 
     def set_mode(self, requested: str) -> dict[str, Any]:
@@ -96,7 +107,8 @@ class ControlPlane:
         if self.apply_mode is not None:
             mode = self._normalize_mode(self.apply_mode(mode))
         self.mode = mode
-        return {"mode": self.mode}
+        return {"mode": self.mode, "generation": self.generation,
+                "note": "Live sessions keep the workbook they opened; only new sessions change."}
 
     def set_workbook(self, path: str) -> dict[str, Any]:
         path = os.path.abspath(os.path.expanduser((path or "").strip()))
@@ -109,7 +121,11 @@ class ControlPlane:
                 raise HTTPException(400, "Workbook path does not exist.")
             workbook_name = os.path.basename(path)
         self.workbook_name = workbook_name
-        return {"workbook_name": self.workbook_name}
+        self.workbook_path = path
+        self.generation += 1
+        self.generation_reason = "workbook switched to %s" % os.path.basename(path)
+        return {"workbook_name": self.workbook_name, "generation": self.generation,
+                "note": "Live sessions keep the previous workbook; only new sessions get this one."}
 
 
 class ModeRequest(BaseModel):
