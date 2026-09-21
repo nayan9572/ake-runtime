@@ -136,7 +136,7 @@ class WorkbookRequest(BaseModel):
     path: str
 
 
-def bind_runtime_state(control: ControlPlane, store: Any) -> ControlPlane:
+def bind_runtime_state(control: ControlPlane, store: Any, settings_obj: Any = None) -> ControlPlane:
     """Bind read-only control state to the real AKE SessionStore.
 
     This keeps launcher controls outside ake_server.api. The launcher can import the
@@ -146,7 +146,108 @@ def bind_runtime_state(control: ControlPlane, store: Any) -> ControlPlane:
     """
     control.active_sessions_provider = store.active_count
     control.workbook_provider = lambda: store.shared_workbook_name
+    control.workbook_path_provider = lambda: getattr(store, "_shared_workbook_path", None)
+    if settings_obj is not None:
+        control.mode_provider = lambda: settings_obj.MODE
     return control
+
+
+def bind_runtime_mutations(control: ControlPlane, store: Any, settings_obj: Any) -> ControlPlane:
+    bind_runtime_state(control, store, settings_obj)
+
+    def apply_mode(mode: str) -> str:
+        if mode == "owner" and store.shared_workbook_name is None:
+            try:
+                store.boot_owner_mode(settings_obj.WORKBOOK_ARG)
+            except Exception as e:
+                raise HTTPException(400, "Cannot enter owner mode: %s" % e)
+            control.generation += 1
+            control.generation_reason = "owner boot"
+        settings_obj.MODE = mode
+        return settings_obj.MODE
+
+    def apply_workbook(path: str) -> str:
+        if not os.path.exists(path):
+            raise HTTPException(400, "No such file: %s" % path)
+        try:
+            store.boot_owner_mode(path)
+        except Exception as e:
+            raise HTTPException(400, "Could not load workbook: %s" % e)
+        settings_obj.WORKBOOK_ARG = path
+        return store.shared_workbook_name
+
+    control.apply_mode = apply_mode
+    control.apply_workbook = apply_workbook
+    return control
+
+
+_TAPPED = ("/query", "/action", "/back", "/home", "/search", "/upload")
+
+
+class ObserverMiddleware:
+    """ASGI observer matching the launcher-embedded HTTP tap."""
+
+    def __init__(self, inner: Any, control: ControlPlane):
+        self.inner = inner
+        self.control = control
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") != "http" or scope.get("path") not in _TAPPED:
+            return await self.inner(scope, receive, send)
+
+        req_chunks, resp_chunks, status_holder = [], [], {}
+
+        async def recv():
+            message = await receive()
+            if message.get("type") == "http.request":
+                req_chunks.append(message.get("body", b""))
+            return message
+
+        async def snd(message):
+            if message.get("type") == "http.response.start":
+                status_holder["code"] = message.get("status")
+            elif message.get("type") == "http.response.body":
+                resp_chunks.append(message.get("body", b""))
+            await send(message)
+
+        await self.inner(scope, recv, snd)
+        try:
+            req = json.loads(b"".join(req_chunks).decode("utf-8")) if req_chunks else {}
+        except Exception:
+            req = {}
+        try:
+            resp = json.loads(b"".join(resp_chunks).decode("utf-8")) if resp_chunks else {}
+        except Exception:
+            resp = {}
+
+        path = scope["path"]
+        if path == "/query":
+            asked = req.get("token")
+        elif path == "/action":
+            asked = req.get("key")
+        elif path == "/search":
+            asked = "search(%s)" % req.get("term", "")
+        elif path == "/upload":
+            asked = "<open session>"
+        else:
+            asked = path.lstrip("/")
+
+        try:
+            entry = control.record(
+                session_id=resp.get("session_id") or req.get("session_id"),
+                asked=asked,
+                entity=(resp.get("entity") or {}).get("id"),
+                workbook=resp.get("workbook_name"),
+            )
+            entry.update({
+                "path": path,
+                "status": status_holder.get("code"),
+                "text": resp.get("text"),
+            })
+        except Exception:
+            pass
+
+
 
 
 def attach_runtime_app(
