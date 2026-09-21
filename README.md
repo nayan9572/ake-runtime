@@ -642,7 +642,23 @@ Do not mix repository-root paths with runtime-relative commands.
 
 # License
 
-See `LICENSE` for the repository license terms.
+AKE and EBIS (https://github.com/nayan9572/EBIS) are maintained as related but currently separate projects.
+
+- AKE provides the architecture-knowledge, workbook-verification, evidence, and knowledge-runtime layer.
+- EBIS provides the broader engine-behavior intelligence and scientific runtime research platform.
+- The bundled EBIS architecture workbook is a current reference dataset used to validate AKE.
+- Future integration between the two projects is an intended direction, not a claim that the current repositories are already one combined system.
+- The boundary is deliberately kept explicit so current AKE behavior remains independently testable and auditable.
+
+# Intellectual property and license
+
+Copyright © 2026 Nayan Kumar.
+
+AKE Runtime is licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later). See `LICENSE`.
+
+AGPL is a strong copyleft open-source license. Modified networked versions must make their corresponding source available to users under the license terms. The license protects the copyright in this implementation and preserves copyleft requirements for downstream modifications. It does not create exclusive ownership of an abstract idea or prevent an independent implementation of the same idea.
+
+The project names AKE, Architecture Knowledge Engine, and related marks are not granted as trademarks by the software license. See `NOTICE.md` for the project attribution and intellectual-property notice.
 
 
 ## Two runtime entry points
@@ -656,7 +672,7 @@ The repository intentionally keeps two distinct launchers under runtime/:
 
 The Master Launcher assembles the tracked AKE runtime and server adapter, uses the bundled EBIS workbook when no workbook is supplied, generates its gateway/dashboard fallback assets, and can expose the server through a Cloudflare quick tunnel.
 
-The tracked runtime tree is the source of truth for repository-local execution. The Colab ZIP upload path remains supported for the launcher artifact, but an old ZIP must not silently replace the checked-out runtime/ source.
+The tracked runtime tree is the source of truth for repository-local execution. When runtime/AKE_Master_Launcher.py is run from that checked-out runtime/ directory, it uses the tracked tree directly; no repacked AKE_Runtime.zip or ake_server.zip is required. The Colab ZIP upload path remains supported for portable artifact launches. An old ZIP must not silently replace the checked-out runtime/ source.
 
 For launcher-specific verification:
 
