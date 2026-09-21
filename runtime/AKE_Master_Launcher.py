@@ -997,7 +997,8 @@ def launch():
     _pip_install_quiet(root)
 
     mode = SERVER_MODE or _ask_mode()
-    if mode in ("user", "u"):        mode = "workspace"
+    if mode in ("user", "u"):
+        mode = "workspace"
     _CONTROL["mode"] = mode
 
     env = os.environ.copy()
