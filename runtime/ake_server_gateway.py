@@ -254,10 +254,16 @@ def attach_runtime_app(
     control: ControlPlane,
     api_app: FastAPI,
     store: Any,
+    settings_obj: Any = None,
+    observe: bool = True,
 ) -> FastAPI:
-    """Bind real runtime state and attach control routes to the existing API app."""
-    bind_runtime_state(control, store)
-    return create_gateway_app(control, api_app=api_app)
+    """Compose the existing API with the launcher-equivalent control/observer layer."""
+    if settings_obj is not None:
+        bind_runtime_mutations(control, store, settings_obj)
+    else:
+        bind_runtime_state(control, store)
+    app = create_gateway_app(control, api_app=api_app, store=store)
+    return ObserverMiddleware(app, control) if observe else app
 
 
 def create_gateway_app(control: ControlPlane, api_app: Optional[FastAPI] = None) -> FastAPI:
@@ -266,6 +272,40 @@ def create_gateway_app(control: ControlPlane, api_app: Optional[FastAPI] = None)
 
     def auth(token: Optional[str]) -> None:
         control._check_token(token)
+
+    if store is not None:
+        @app.get("/_ake/public_state")
+        def public_state():
+            return control.public_state()
+
+        @app.get("/_ake/availability")
+        def availability(session_id: str):
+            try:
+                ws = store.get(session_id)
+            except Exception:
+                raise HTTPException(404, "Unknown session_id '%s'." % session_id)
+            shell = ws.shell
+            if not shell.context or shell.mode != "menu":
+                data = {"context": shell.context, "items": {}}
+            else:
+                items = {}
+                for act in ws.ake.entity_actions(shell.context):
+                    items[act["key"]] = {
+                        "label": act["label"], "count": act["count"],
+                        "available": True if act["mode"] == "discovered" else act["available"],
+                        "mode": act["mode"],
+                        "reason": None if act["mode"] == "discovered" else act.get("reason"),
+                    }
+                data = {"context": shell.context, "items": items}
+            data.update({
+                "session_id": session_id,
+                "generation": control.generation,
+                "workbook_name": ws.workbook_name,
+                "server_workbook_name": store.shared_workbook_name,
+                "stale": bool(store.shared_workbook_name and
+                              store.shared_workbook_name != ws.workbook_name),
+            })
+            return data
 
     @app.get("/_ake/control/state")
     def control_state(x_ake_control_token: Optional[str] = Header(default=None)):
