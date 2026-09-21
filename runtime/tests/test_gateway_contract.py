@@ -2,7 +2,7 @@
 
 from fastapi.testclient import TestClient
 
-from ake_server_gateway import ControlPlane, create_gateway_app
+from ake_server_gateway import ControlPlane, bind_runtime_state, create_gateway_app
 
 TOKEN = "phase1-test-token"
 
@@ -100,3 +100,26 @@ def test_workbook_missing_path_rejected():
 def test_control_routes_are_isolated_from_ake_api():
     c, _ = client()
     assert c.get("/health").status_code == 404
+
+
+def test_runtime_state_binding_uses_session_store():
+    class FakeStore:
+        def __init__(self):
+            self.active = 3
+            self.shared_workbook_name = "runtime.xlsx"
+
+        def active_count(self):
+            return self.active
+
+    store = FakeStore()
+    control = ControlPlane(token=TOKEN, mode="owner", workbook_name="stale.xlsx")
+    bind_runtime_state(control, store)
+    assert control.state() == {
+        "mode": "owner",
+        "workbook_name": "runtime.xlsx",
+        "active_sessions": 3,
+    }
+    store.active = 1
+    store.shared_workbook_name = "changed.xlsx"
+    assert control.state()["active_sessions"] == 1
+    assert control.state()["workbook_name"] == "changed.xlsx"
