@@ -349,3 +349,40 @@ def create_gateway_app(control: ControlPlane, api_app: Optional[FastAPI] = None)
         return control.set_workbook(req.path)
 
     return app
+
+ 
+ 
+def mount_dashboard(app: FastAPI, here: str, dashboard_env: Optional[str] = None) -> Optional[str]:
+    """Mount the launcher-compatible dashboard candidates after API/control routes."""
+    try:
+        from fastapi.staticfiles import StaticFiles
+    except ImportError:
+        return None
+    candidates = [
+        dashboard_env or "",
+        os.path.join(here, "ake_server", "static"),
+        os.path.join(here, "ake_server", "frontend"),
+        os.path.join(here, "ake_server", "dashboard"),
+        os.path.join(here, "ake_server", "public"),
+        os.path.join(here, "ake_dashboard"),
+    ]
+    for directory in candidates:
+        if directory and os.path.isfile(os.path.join(directory, "index.html")):
+            app.mount("/", StaticFiles(directory=directory, html=True), name="dashboard")
+            return directory
+    return None
+
+
+def wrap_with_observer(app: Any, control: ControlPlane) -> ObserverMiddleware:
+    """Wrap the fully assembled app so only user-facing HTTP routes are observed."""
+    return ObserverMiddleware(app, control)
+
+
+def run_server(app: Any, host: Optional[str] = None, port: Optional[int] = None) -> None:
+    """Standalone uvicorn entrypoint matching the embedded launcher's server contract."""
+    import uvicorn
+    uvicorn.run(
+        app,
+        host=host or os.environ.get("AKE_SERVER_HOST", "0.0.0.0"),
+        port=port or int(os.environ.get("AKE_SERVER_PORT", "8000")),
+    )
