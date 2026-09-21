@@ -10,7 +10,6 @@
 
 ## Not yet supported (see KNOWN_LIMITATIONS.md)
 - Genuine composite primary keys (F-06)
-- Composite primary keys (F-06)
 - Relationship sheets with non-standard column names, when a Registry Catalog IS present (F-07)
 - Duplicate primary-key values within the same registry (F-08b)
 - FK stored as free-text prose that matches no entity name (Command residual)
