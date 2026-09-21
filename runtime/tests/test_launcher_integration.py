@@ -198,6 +198,12 @@ def test_launcher_real_upload_query_and_observer_feed(running_launcher):
     token = launcher._CONTROL["token"]
     headers = {"x-ake-control-token": token}
 
+    _json(
+        base + "/_ake/control/mode",
+        method="POST",
+        body={"mode": "workspace"},
+        headers=headers,
+    )
     wb = (root / "EBIS_Architecture_Registry_Workbook_v17.xlsx").read_bytes()
     status, uploaded = _multipart_upload(base + "/upload", "file", "copy.xlsx", wb)
     assert status == 200
@@ -206,7 +212,7 @@ def test_launcher_real_upload_query_and_observer_feed(running_launcher):
     status, result = _json(
         base + "/query",
         method="POST",
-        body={"session_id": session_id, "question": "overview"},
+        body={"session_id": session_id, "token": "overview"},
     )
     assert status == 200
     assert result["session_id"] == session_id
