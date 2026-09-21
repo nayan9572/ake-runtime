@@ -78,6 +78,17 @@ class ControlPlane:
             "feed_len": len(self._feed),
         }
 
+    def public_state(self) -> dict[str, Any]:
+        mode = self.mode_provider() if self.mode_provider is not None else self.mode
+        workbook_name = self.workbook_provider() if self.workbook_provider is not None else self.workbook_name
+        active_sessions = self.active_sessions_provider() if self.active_sessions_provider is not None else self.active_sessions
+        return {
+            "mode": mode,
+            "workbook_name": workbook_name if mode == "owner" else None,
+            "generation": self.generation,
+            "active_sessions": int(active_sessions),
+        }
+
     def feed(self, since: int = 0, limit: int = 100) -> dict[str, Any]:
         since = max(0, int(since))
         limit = max(1, min(int(limit), 100))
