@@ -1,0 +1,10 @@
+{
+ "ir_schema_version": "1.1",
+ "ir_type": "universal_property_graph",
+ "node_attributes": ["class","has_PK","has_Evidence","name","evidence","metadata","in_execution","has_lifecycle"],
+ "edge_fields": ["source","relation","target","src_class","tgt_class","evidence"],
+ "edge_semantics": "relation type derived from column header; cardinality derived by count; forward+reverse indexed",
+ "loader": {"registry_catalog": "read if present, else inferred from structure (F-04)"},
+ "template_registries": {"source": "workbook if present, else bundled ake/defaults/*.json"},
+ "compatibility": "workbooks with ID-pattern ([A-Z]+-N) primary keys; single or multi sheet"
+}

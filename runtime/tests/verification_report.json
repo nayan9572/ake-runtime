@@ -1,0 +1,523 @@
+{
+ "passed": 101,
+ "total": 101,
+ "metrics": {
+  "universal_edges": 1948,
+  "runtime_primitives": 45,
+  "composition_closed": true,
+  "feature_only_edges": 280,
+  "classes_with_edges": "13/13",
+  "relation_vocab": 33,
+  "ir_nodes": 1037,
+  "attribute_invariants": 24,
+  "relationship_invariants": 14,
+  "robotics_edges": 8
+ },
+ "checks": [
+  {
+   "name": "RPDE: >=12/13 owner classes have traversable edges",
+   "pass": true,
+   "detail": "13/13"
+  },
+  {
+   "name": "RPDE: universal edges > feature-only edges",
+   "pass": true,
+   "detail": "1948>280"
+  },
+  {
+   "name": "Graph: 0 duplicate edges",
+   "pass": true,
+   "detail": "dups=0"
+  },
+  {
+   "name": "Graph: 0 self-loops",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "Graph: 0 dangling target",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "RPDE: relation vocabulary derived (not empty)",
+   "pass": true,
+   "detail": "33 relations"
+  },
+  {
+   "name": "RPDE: cardinality derived",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "IR: nodes carry attributes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "IR-only: attribute invariants derivable from nodes",
+   "pass": true,
+   "detail": "24 attr-invariants"
+  },
+  {
+   "name": "IR-only: relationship invariants derivable from edges",
+   "pass": true,
+   "detail": "14 rel-invariants"
+  },
+  {
+   "name": "IR-only: lifecycle nodes queryable",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "IR-only: execution nodes queryable",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "Determinism: identical edge count across runs",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "Determinism: identical invariant count",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "Cross-workbook: robotics graph builds",
+   "pass": true,
+   "detail": "8 edges"
+  },
+  {
+   "name": "Cross-workbook: derived vocabulary is domain-specific (disjoint from EBIS)",
+   "pass": true,
+   "detail": "['actuator', 'controller', 'link']"
+  },
+  {
+   "name": "Cross-workbook: name resolution works",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-14: 'from colab_run import run' callable",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-04: catalog-less workbook infers owner",
+   "pass": true,
+   "detail": "1 owners"
+  },
+  {
+   "name": "F-04: bundled defaults -> invariants derived w/o Property Registry",
+   "pass": true,
+   "detail": "2 inv"
+  },
+  {
+   "name": "F-18: dangling catalog registry does not raise",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-18: model still builds (0 edges from the dangling registry)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: output directory exists",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: all expected artifacts exist",
+   "pass": true,
+   "detail": "missing=set()"
+  },
+  {
+   "name": "UX-1: run() reports absolute artifact paths",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: ake_out.zip generated",
+   "pass": true,
+   "detail": "/tmp/tmpx4pvajdf.zip"
+  },
+  {
+   "name": "UX-1: zip path matches run() return value",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: zip contains every generated artifact",
+   "pass": true,
+   "detail": "missing_in_zip=set()"
+  },
+  {
+   "name": "UX-1: run() summary reports output_dir",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: Colab auto-download is a safe no-op outside Colab",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode prints clean 'AKE Runtime' banner",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode prints human metrics summary",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode prints 'Runtime completed successfully.'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode does NOT print [TRACE] lines",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode does NOT print the raw JSON dump",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode does NOT print file:// links",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode still creates ake_out.zip",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode still prints absolute output dir",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: default mode still prints absolute zip path",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: debug=True still prints the clean production banner too",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: debug=True prints all 7 runner.run() [TRACE] markers",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: debug=True prints file:// links",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: debug=True prints the raw JSON dump",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-21: AKE_DEBUG=1 env var enables debug mode",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-030: EBIS uses Registry importer",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-030: flat table selects Tabular importer (not domain-specific)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-030: flat table mapped into canonical entities+relations",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-030: SAME explorer runs on tabular workbook",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-030: importers contain NO domain names (Superstore/Hospital/Finance/...)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-031: opening an object shows numbered menu + breadcrumb",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-031: a relation action returns numbered results",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-031: a result drills into a new object page",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-031: back returns to previous object",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-031: tree renders relationships",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-031: menu is derived from the entity's actual relations",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-029: resolve-by-name opens object",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-029: help is dynamic",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-029: confidence is evidence-derived (0..100)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-029: exit signals stop",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-029: unknown object -> suggestions, never guess",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-028: registries derived from workbook (names from catalog)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-028: entity prefixes derived (not hardcoded)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-028: relation types derived from IR",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-028: capabilities DERIVED available (EBIS has relation-specific capabilities)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-028: Discovery Engine has no hardcoded EBIS registry/prefix names",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-026: capability universe derived from workbook relations",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-026: most question types answerable somewhere on EBIS",
+   "pass": true,
+   "detail": "50/50"
+  },
+  {
+   "name": "F-026: CMD-002 has GET_HANDLER supported (command shape)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-026: FEAT-016 has workbook-specific relation capabilities (feature shape)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-026: universal floor (Identity/Integrity/Coverage) answerable for all entities",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10: GET_HANDLER derives library-primitive sequence",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10: GET_UPSTREAM derives DIFFERENT sequence (direction/ render)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10: every derived primitive is in the library (closure)",
+   "pass": true,
+   "detail": "outside=set()"
+  },
+  {
+   "name": "M10: derive() has no hardcoded query-name branches",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10: applicable_queries includes multi-hop reachable (CMD-001 can reach Handler via discovery)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10: relation inventory offers GET_HANDLER for CMD-002 (has handler edge)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10: new query auto-derives with no code change",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10-V1: rename-invariance (same values -> same sequence)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10-V1: value-sensitivity (name ignored, objective drives seq)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10-V1: no GET_* literals in planner logic",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "M10-V2: query definitions loaded from data registry",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-024: lifecycle stages derived from entity relations (not hardcoded)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-024: Handler stage populated from IR",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-024: Evidence stage populated",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-024: CMD-048 gates populated (/-split integrated into lifecycle)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-022: canonicalization report generated",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-022: handler->Component secondary resolves some refs",
+   "pass": true,
+   "detail": "component=16"
+  },
+  {
+   "name": "F-022: absent refs enumerated for author",
+   "pass": true,
+   "detail": "absent=275"
+  },
+  {
+   "name": "F-022: still 0 wrong-class after Component secondary",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-023: '/'-compound gate refs recovered as edges",
+   "pass": true,
+   "detail": "gate_edges=14"
+  },
+  {
+   "name": "F-023: report distinguishes registered-other-type from genuine-absent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-023: genuine-absent verified by exact all-registry search",
+   "pass": true,
+   "detail": "genuine_absent=275"
+  },
+  {
+   "name": "F-021: Command edge coverage rises above baseline (>100)",
+   "pass": true,
+   "detail": "289 edges"
+  },
+  {
+   "name": "F-021: no wrong-class prose edges",
+   "pass": true,
+   "detail": "wrong_class=0"
+  },
+  {
+   "name": "F-021: no evidence-column edges",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-021: LIFECYCLE composition executes on CMD-002 (unchanged runtime)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "F-021: CMD-002 reconstructs typed edges",
+   "pass": true,
+   "detail": "5 edges"
+  },
+  {
+   "name": "Library: 45 primitives cataloged",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "Library: every primitive implemented",
+   "pass": true,
+   "detail": "missing=set()"
+  },
+  {
+   "name": "Composition closure: all pipeline primitives are in the library",
+   "pass": true,
+   "detail": "outside=set()"
+  },
+  {
+   "name": "Composition: LIFECYCLE_RECONSTRUCT uses only library primitives",
+   "pass": true,
+   "detail": ""
+  }
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "header": [
+  "RT-ID",
+  "Kind",
+  "Purpose Template",
+  "Condition Template",
+  "Action Template",
+  "Severity"
+ ],
+ "rows": [
+  [
+   "RT-01",
+   "attribute",
+   "Every {scope} MUST have {property}.",
+   "{property} is present on the {scope} row",
+   "flag {scope} rows missing {property}",
+   "ERROR"
+  ],
+  [
+   "RT-02",
+   "relationship",
+   "Every {scope} MUST reference an existing {target}.",
+   "{property} resolves to an existing {target} PK",
+   "flag {scope} rows whose {property} is missing/dangling",
+   "ERROR"
+  ]
+ ]
+}

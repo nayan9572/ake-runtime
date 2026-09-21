@@ -1,0 +1,44 @@
+{
+ "header": [
+  "PROP-ID",
+  "Property",
+  "Kind",
+  "Primitive",
+  "Field",
+  "Operator",
+  "Value",
+  "Purpose"
+ ],
+ "rows": [
+  [
+   "PROP-01",
+   "has_PK",
+   "attribute",
+   "RESOLVE_KEYS",
+   "PK_in",
+   "not_null",
+   null,
+   "entity has a primary key"
+  ],
+  [
+   "PROP-02",
+   "has_Evidence",
+   "attribute",
+   "FIND_FILES",
+   null,
+   "non_empty",
+   null,
+   "entity row carries file:line provenance"
+  ],
+  [
+   "PROP-03",
+   "has_Reference",
+   "relationship",
+   "FIND_HIERARCHY",
+   "parents",
+   "non_empty",
+   null,
+   "entity references another owner via FK (expanded per FK column)"
+  ]
+ ]
+}

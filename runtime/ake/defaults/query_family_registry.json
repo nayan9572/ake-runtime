@@ -1,0 +1,40 @@
+{
+ "header": [
+  "QF-ID",
+  "Kind",
+  "Query Name Template",
+  "Opcode Pipeline"
+ ],
+ "rows": [
+  [
+   "QF-01",
+   "attribute",
+   "LIST_MISSING_{PROP}",
+   "find_missing_evidence \u2192 render_table"
+  ],
+  [
+   "QF-02",
+   "attribute",
+   "VALIDATE_{SCOPE}_{PROP}",
+   "check_fk \u2192 render_table"
+  ],
+  [
+   "QF-03",
+   "relationship",
+   "TRACE_OWNER_{TARGET}",
+   "resolve_entity \u2192 walk_parent \u2192 attach_evidence \u2192 render_tree"
+  ],
+  [
+   "QF-04",
+   "relationship",
+   "VALIDATE_{SCOPE}_REFERENCE",
+   "check_fk \u2192 render_table"
+  ],
+  [
+   "QF-05",
+   "relationship",
+   "LIST_{SCOPE}_ORPHANS",
+   "find_orphan \u2192 render_list"
+  ]
+ ]
+}

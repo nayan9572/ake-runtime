@@ -1,0 +1,83 @@
+{
+ "GET_HANDLER": {
+  "objective": "traverse",
+  "relation": "handler",
+  "direction": "out",
+  "render": "tree"
+ },
+ "GET_GATE": {
+  "objective": "traverse",
+  "relation": "gate",
+  "direction": "out",
+  "render": "tree"
+ },
+ "GET_PIPELINE": {
+  "objective": "traverse",
+  "relation": "pipeline",
+  "direction": "out",
+  "render": "tree"
+ },
+ "GET_BRIDGE": {
+  "objective": "traverse",
+  "relation": "bridge",
+  "direction": "out",
+  "render": "tree"
+ },
+ "GET_VALIDATOR": {
+  "objective": "traverse",
+  "relation": "validator",
+  "direction": "out",
+  "render": "tree"
+ },
+ "GET_OWNER": {
+  "objective": "traverse",
+  "relation": "module",
+  "direction": "out",
+  "render": "tree"
+ },
+ "GET_CATEGORY": {
+  "objective": "traverse",
+  "relation": "category",
+  "direction": "out",
+  "render": "tree"
+ },
+ "GET_PRODUCERS": {
+  "objective": "traverse",
+  "relation": "produces",
+  "direction": "in",
+  "render": "graph"
+ },
+ "GET_CONSUMERS": {
+  "objective": "traverse",
+  "relation": "consumes",
+  "direction": "out",
+  "render": "graph"
+ },
+ "GET_UPSTREAM": {
+  "objective": "traverse",
+  "relation": "*",
+  "direction": "in",
+  "render": "graph"
+ },
+ "GET_DOWNSTREAM": {
+  "objective": "traverse",
+  "relation": "*",
+  "direction": "out",
+  "render": "graph"
+ },
+ "GET_EVIDENCE": {
+  "objective": "attribute",
+  "attribute": "evidence",
+  "render": "table"
+ },
+ "VALIDATE_REFERENCES": {
+  "objective": "validate",
+  "render": "table"
+ },
+ "GET_NEIGHBORS": {
+  "objective": "traverse",
+  "relation": "*",
+  "direction": "both",
+  "render": "graph"
+ }
+}

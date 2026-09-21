@@ -1,0 +1,111 @@
+{
+ "passed": 21,
+ "total": 21,
+ "checks": [
+  {
+   "name": "batch: exits 0",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "batch: ake_out/ created at requested path",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "batch: all 8 artifacts written",
+   "pass": true,
+   "detail": "missing=set()"
+  },
+  {
+   "name": "batch: does not read/block on stdin",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: prints 'AKE Finished' banner",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: prints Output Directory label + absolute path",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: prints Download Package label + absolute zip path",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: prints file:// notebook links",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: ake_out.zip created beside the output dir",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "UX-1: zip contains all 8 artifacts",
+   "pass": true,
+   "detail": "missing=set()"
+  },
+  {
+   "name": "batch: default outdir exits 0",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "batch: default outdir lands beside AKE_MASTER.py, not caller cwd",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "demo: exits 0",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "demo: prints design-phase registries line",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "repl (no args): exits 0 on EOF",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "repl (no args): shows REPL prompt",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "repl (no args): no ake_out produced",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "repl (--repl flag): exits 0 on EOF",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "repl (--repl flag): shows REPL prompt",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "repl (--repl flag): no ake_out produced",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "batch: byte-identical artifacts across independent runs",
+   "pass": true,
+   "detail": ""
+  }
+ ]
+}

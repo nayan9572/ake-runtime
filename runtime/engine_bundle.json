@@ -1,0 +1,30 @@
+{
+  "engine_id": "ake",
+  "engine_version": "1.0",
+  "launcher": {
+    "module": "ake_ebis_adapter",
+    "callable": "start"
+  },
+  "capabilities": [
+    {"name": "query_entity",    "method": "query_entity",    "input": "token, prefer=None",    "output": "dict",    "description": "Resolve entity + run applicable query"},
+    {"name": "search",          "method": "search",          "input": "term",                  "output": "list",    "description": "Full-text entity search"},
+    {"name": "describe",        "method": "describe",        "input": "token",                 "output": "dict",    "description": "Entity detail view"},
+    {"name": "resolve",         "method": "resolve",         "input": "token",                 "output": "dict",    "description": "Token → entity resolution"},
+    {"name": "discover",        "method": "discover",        "input": "query",                 "output": "dict",    "description": "Multi-hop discovery engine"},
+    {"name": "overview",        "method": "overview",        "input": "",                      "output": "dict",    "description": "Registry universe summary"},
+    {"name": "ask",             "method": "ask",             "input": "request",               "output": "dict",    "description": "Natural-language query pipeline"},
+    {"name": "scan_contract",   "method": "scan_state_contract", "input": "engine_contract",   "output": "dict",    "description": "Engine-agnostic state-contract scanner"}
+  ],
+  "callable_contract": {
+    "input": "workbook_path",
+    "output": "handle"
+  },
+  "runtime_health": {
+    "method": "overview"
+  },
+  "knowledge_interface": {
+    "method": "overview"
+  },
+  "requires_workbook": true,
+  "workbook": "EBIS_Architecture_Registry_Workbook_v17.xlsx"
+}
